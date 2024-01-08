@@ -1,8 +1,7 @@
-import { Args, Context, Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { Public } from 'common/common/decorators/public.decorator';
-import { Request } from 'express';
 
 @Resolver()
 export class UserResolver {
@@ -10,6 +9,7 @@ export class UserResolver {
     private readonly userService: UserService
   ) { }
 
+  @Public()
   @Query(() => User)
   async getUserProfile(
     @Args('idOrEmail') idOrEmail: string,

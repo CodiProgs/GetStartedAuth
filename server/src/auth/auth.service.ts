@@ -25,7 +25,7 @@ export class AuthService {
       if (err.code === 'P2002') {
         throw new ConflictException('Email already exists')
       }
-      throw new BadRequestException('Unexpected error')
+      throw new BadRequestException({ UnexpectedError: 'Unexpected error' })
     })
   }
 
@@ -93,14 +93,14 @@ export class AuthService {
   }
 
   async deleteRefreshToken(refreshToken: string) {
-    return await this.prisma.token.delete({ where: { token: refreshToken } }).catch((_) => { throw new BadRequestException('Unexpected error'); })
+    return await this.prisma.token.delete({ where: { token: refreshToken } }).catch((_) => { throw new BadRequestException({ UnexpectedError: 'Unexpected error' }) })
   }
 
   async googleAuth(email: string, userAgent: string) {
     const userExists = await this.userService.findOne(email)
     if (userExists) return await this.generateTokens(userExists, userAgent)
     const newUser = await this.userService.create({ email: email, provider: 'GOOGLE' })
-    if (!newUser) throw new BadRequestException('Unexpected error')
+    if (!newUser) throw new BadRequestException({ UnexpectedError: 'Unexpected error' })
     return await this.generateTokens(newUser, userAgent)
   }
 }

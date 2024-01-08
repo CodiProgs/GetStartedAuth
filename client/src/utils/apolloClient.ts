@@ -52,10 +52,14 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
                         })
                         .catch((error) => observer.error(error))
                 })
-            } else if (err.extensions?.invalidSession) {
-
+            } else if (err.extensions?.UnexpectedError) {
                 return new Observable((observer) => {
-                    window.dispatchEvent(new Event("Unauthorized"));
+                    window.dispatchEvent(new Event("UnexpectedError"));
+                    observer.error(err)
+                })
+            } else if (err.extensions.code === "UNAUTHENTICATED") {
+                return new Observable((observer) => {
+                    window.dispatchEvent(new Event("UnauthenticatedError"));
                     observer.error(err)
                 })
             }

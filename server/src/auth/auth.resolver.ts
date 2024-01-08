@@ -19,7 +19,6 @@ export class AuthResolver {
   @Mutation(() => String)
   async register(
     @Args('registerInput') dto: RegisterDto,
-    @Context() context: { res: Response }
   ) {
     await this.authService.register(dto)
     return STATUS_CODES[HttpStatus.CREATED]
@@ -32,7 +31,7 @@ export class AuthResolver {
     @Context() context: { res: Response, req: Request },
   ) {
     const tokens = await this.authService.login(dto, userAgent)
-    if (!tokens) throw new BadRequestException('Unexpected error')
+    if (!tokens) throw new BadRequestException({ UnexpectedError: 'Unexpected error' })
     await this.authService.setRefreshTokenToCookie(tokens, context.res)
 
     return {
