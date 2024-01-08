@@ -8,7 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // Add your custom styles here
+      colors: {
+        themeColorBg: "rgb(var(--bg-color))",
+        themeColorBgSoft: "rgb(var(--bg-colorSoft))",
+        themeColorText: "rgb(var(--text-color))",
+      }
     },
   },
   plugins: [],

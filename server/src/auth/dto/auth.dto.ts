@@ -6,14 +6,14 @@ import { IsPasswordsMatching } from "common/common/decorators/passwords-matching
 export class RegisterDto {
 
   @Field()
-  @IsNotEmpty()
-  @IsString()
-  @Length(3, 20)
+  @IsNotEmpty({ message: 'Name is required' })
+  @IsString({ message: 'Name should be a string' })
+  @Length(3, 20, { message: 'Name should be between 3 and 20 characters' })
   name: string;
 
   @Field()
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail({}, { message: 'Invalid email' })
   email: string;
 
   @Field()
@@ -22,13 +22,13 @@ export class RegisterDto {
   nickname: string;
 
   @Field()
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(6)
+  @IsNotEmpty({ message: 'Password is required' })
+  @IsString({ message: 'Password should be a string' })
+  @MinLength(6, { message: 'Password should be at least 6 characters' })
   password: string;
 
   @Field()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Password confirmation is required' })
   @Validate(IsPasswordsMatching)
   passwordConfirm: string;
 
@@ -38,12 +38,12 @@ export class RegisterDto {
 export class LoginDto {
 
   @Field()
-  @IsNotEmpty()
-  @IsEmail()
+  @IsNotEmpty({ message: 'Email is required' })
+  @IsEmail({}, { message: 'Invalid email' })
   email: string;
 
   @Field()
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'Password is required' })
+  @IsString({ message: 'Password should be a string' })
   password: string;
 }

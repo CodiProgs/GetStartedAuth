@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as CookieParser from 'cookie-parser';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { graphqlUploadExpress } from 'graphql-upload-ts';
 import { GraphQLErrorFilter } from './filter/exception.filter';
 
@@ -25,6 +25,15 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      exceptionFactory: (errors) => {
+        const formattedErrors = errors.reduce((acc, err) => {
+          acc[err.property] = Object.values(err.constraints).join(
+            ', ',
+          )
+          return acc;
+        }, {});
+        throw new BadRequestException(formattedErrors);
+      }
     })
   )
   app.useGlobalFilters(new GraphQLErrorFilter());
