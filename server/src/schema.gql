@@ -1,0 +1,49 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input LoginDto {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  login(loginInput: LoginDto!): User!
+  logout: String!
+  refreshTokens: User!
+  register(registerInput: RegisterDto!): String!
+}
+
+enum Providers {
+  GITHUB
+  GOOGLE
+  LOCAL
+}
+
+type Query {
+  getUserProfile(idOrEmail: String!): User!
+}
+
+input RegisterDto {
+  email: String!
+  name: String!
+  nickname: String!
+  password: String!
+  passwordConfirm: String!
+}
+
+enum Roles {
+  ADMIN
+  USER
+}
+
+type User {
+  avatar: String
+  email: String!
+  id: String!
+  name: String!
+  nickname: String!
+  provider: Providers!
+  roles: [Roles!]
+  token: String
+}
