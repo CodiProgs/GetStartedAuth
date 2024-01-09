@@ -12,8 +12,8 @@ export class UserResolver {
   @Public()
   @Query(() => User)
   async getUserProfile(
-    @Args('idOrEmail') idOrEmail: string,
+    @Args('nickname') nickname: string,
   ) {
-    return await this.userService.findOne(idOrEmail)
+    return await this.userService.findOne(nickname)
   }
 }

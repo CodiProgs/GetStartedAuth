@@ -7,8 +7,8 @@ import { useParams } from 'next/navigation';
 import React from 'react';
 
 function GetUserProfile() {
-  const idOrEmail = useParams()?.idOrEmail || '';
-  const { data, loading, error } = useQuery<GetUserProfileQuery>(GET_USER_PROFILE, { variables: { idOrEmail } })
+  const nickname = useParams()?.nickname || '';
+  const { data, loading, error } = useQuery<GetUserProfileQuery>(GET_USER_PROFILE, { variables: { nickname } })
   return (
     <div>
       {!loading ? (
@@ -17,9 +17,7 @@ function GetUserProfile() {
             <h1>{data?.getUserProfile?.name}</h1>
             <p>Email: {data?.getUserProfile?.email}</p>
           </div>
-        ) : (
-          <p>Error: {error.message}</p>
-        )
+        ) : (<p>User not found</p>)
       ) : (
         <p>Loading...</p>
       )}

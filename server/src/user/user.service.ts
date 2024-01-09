@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { $Enums, Provider, User } from '@prisma/client';
+import { Provider, User } from '@prisma/client';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
@@ -28,17 +28,17 @@ export class UserService {
     })
   }
 
-  async findOne(idOrEmail: string, isReset = false) {
+  async findOne(idOrNickname: string, isReset = false) {
     if (isReset) {
-      await this.cacheManager.del(`user:${idOrEmail}`)
+      await this.cacheManager.del(`user:${idOrNickname}`)
     }
-    const user: User = await this.cacheManager.get(`user:${idOrEmail}`)
+    const user: User = await this.cacheManager.get(`user:${idOrNickname}`)
     if (!user) {
       const user = await this.prisma.user.findFirst({
         where: {
           OR: [
-            { id: idOrEmail },
-            { email: idOrEmail }
+            { id: idOrNickname },
+            { nickname: idOrNickname }
           ]
         }
       })

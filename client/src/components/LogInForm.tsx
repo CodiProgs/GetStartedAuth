@@ -44,6 +44,7 @@ function LogInForm() {
         email: response.data?.login.email,
         avatar: response.data?.login.avatar,
         name: response.data?.login.name,
+        provider: response.data?.login.provider,
         nickname: response.data?.login.nickname,
         id: response.data?.login.id,
         callbackUrl,

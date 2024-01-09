@@ -6,13 +6,13 @@ import React from 'react';
 import SignOutButton from './SignOutButton';
 
 function Header() {
-  const { data, status } = useSession()
+  const { data: session, status } = useSession()
   return (
     <header className='flex justify-between items-center py-4'>
       <Link href="/">Home</Link>
       {status !== 'loading' ? (status === 'authenticated' ? (
         <div>
-          <Link href={`/user/${data.user?.nickname}`}>{data.user?.name}</Link>
+          <Link href={`/user/${session.user?.nickname}`}>{session.user?.name}</Link>
           <SignOutButton />
         </div>
       ) : (

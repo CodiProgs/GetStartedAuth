@@ -2,10 +2,10 @@ import { gql } from "@apollo/client";
 
 export const GET_USER_PROFILE = gql`
     query GetUserProfile (
-        $idOrEmail: String!
+        $nickname: String!
     ){
         getUserProfile(
-            idOrEmail: $idOrEmail
+            nickname: $nickname
         ){
             id
             name

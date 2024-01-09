@@ -21,7 +21,7 @@ enum Providers {
 }
 
 type Query {
-  getUserProfile(idOrEmail: String!): User!
+  getUserProfile(nickname: String!): User!
 }
 
 input RegisterDto {
