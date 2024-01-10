@@ -47,8 +47,8 @@ export class AuthService {
   private async getRefreshToken(userId: string, userAgent: string) {
     const token = await this.prisma.token.findFirst({
       where: {
-        userId: userId,
-        userAgent: userAgent
+        userId,
+        userAgent
       }
     })
 
@@ -61,8 +61,8 @@ export class AuthService {
       create: {
         token: v4(),
         exp: add(new Date(), { days: 30 }),
-        userId: userId,
-        userAgent: userAgent
+        userId,
+        userAgent
       }
     })
   }

@@ -21,6 +21,7 @@ enum Providers {
 }
 
 type Query {
+  deleteUser(id: String!): String!
   getUserProfile(nickname: String!): User!
 }
 

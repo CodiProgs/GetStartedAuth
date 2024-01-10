@@ -1,11 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { Provider, User } from '@prisma/client';
+import { Provider, Role, User } from '@prisma/client';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { convertToSeconds } from 'common/common/utils/convert-to-seconds.utils';
+import { JwtPayload } from 'src/auth/interfaces';
 
 @Injectable()
 export class UserService {
@@ -55,4 +56,14 @@ export class UserService {
   }
 
   // todo!: add delete user, send id and check id from payload
+  async delete(id: string, user: JwtPayload) {
+    if (user.id !== id && !user.roles.includes(Role.ADMIN)) throw new BadRequestException({ UnexpectedError: 'You are not allowed to delete this user' })
+    await this.cacheManager.store.mdel(`user:${id}`, `user:${user.email}`, `user:${user.nickname}`)
+    const deletedUser = await this.prisma.user.delete({
+      where: {
+        id
+      }
+    }).catch(() => { throw new BadRequestException({ UnexpectedError: 'User not found' }) })
+    return deletedUser.id
+  }
 }
