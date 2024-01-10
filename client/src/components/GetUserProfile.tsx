@@ -17,7 +17,13 @@ function GetUserProfile() {
             <h1>{data?.getUserProfile?.name}</h1>
             <p>Email: {data?.getUserProfile?.email}</p>
           </div>
-        ) : (<p>User not found</p>)
+        ) : (
+          error.message === 'Unauthorized' ? (
+            <p>You are not authorized</p>
+          ) : (
+            <p>User not found</p>
+          )
+        )
       ) : (
         <p>Loading...</p>
       )}

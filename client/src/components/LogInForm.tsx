@@ -14,9 +14,9 @@ function LogInForm() {
   const router = useRouter();
 
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/profile";
+  const callbackUrl = searchParams.get("callbackUrl");
 
-  const [login, { data, loading, error }] = useMutation<LoginMutation>(LOGIN);
+  const [login] = useMutation<LoginMutation>(LOGIN);
   const [errors, setErrors] = React.useState<GraphQLErrorExtensions>({});
 
   const [loginData, setLoginData] = React.useState({
@@ -47,14 +47,12 @@ function LogInForm() {
         provider: response.data?.login.provider,
         nickname: response.data?.login.nickname,
         id: response.data?.login.id,
-        callbackUrl,
       });
-      setLoginData({ email: "", password: "" });
       if (typeof window !== "undefined") {
         window.localStorage.setItem("token", response.data?.login.token!);
       }
       if (!res?.error) {
-        router.push(callbackUrl);
+        router.push(callbackUrl ? callbackUrl : `/user/${response.data?.login.id}`);
       }
     }
   };
@@ -65,7 +63,7 @@ function LogInForm() {
       {errors?.invalidCredentials! && <p className='text-red-500 text-sm'>{errors?.invalidCredentials as string}</p>}
       <div className='flex justify-between items-center gap-4'>
         <button type='submit' className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-10 text-center rounded '>Sign in</button>
-        <Link href="/register" className='hover:text-blue-500 p-2'>Create an account</Link>
+        <Link href={`/register`} className='hover:text-blue-500 p-2'>Create an account</Link>
       </div>
     </form>
   );

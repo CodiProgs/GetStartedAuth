@@ -28,23 +28,27 @@ export class UserService {
     })
   }
 
-  async findOne(idOrNickname: string, isReset = false) {
+  async findOne(identifier: string, isReset = false) {
     if (isReset) {
-      await this.cacheManager.del(`user:${idOrNickname}`)
+      await this.cacheManager.del(`user:${identifier}`)
     }
-    const user: User = await this.cacheManager.get(`user:${idOrNickname}`)
+    const user: User = await this.cacheManager.get(`user:${identifier}`)
     if (!user) {
       const user = await this.prisma.user.findFirst({
         where: {
           OR: [
-            { id: idOrNickname },
-            { nickname: idOrNickname }
+            { id: identifier },
+            { nickname: identifier },
+            { email: identifier }
           ]
         }
       })
       if (!user) return null
-      await this.cacheManager.set(`user:${user.id}`, user, convertToSeconds(this.config.get('JWT_EXP')))
-      await this.cacheManager.set(`user:${user.email}`, user, convertToSeconds(this.config.get('JWT_EXP')))
+      await this.cacheManager.store.mset([
+        [`user:${user.id}`, user],
+        [`user:${user.email}`, user],
+        [`user:${user.nickname}`, user]
+      ], convertToSeconds(this.config.get('JWT_EXP')))
       return user
     }
     return user

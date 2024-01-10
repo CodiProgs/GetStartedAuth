@@ -1,7 +1,6 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { Session } from "next-auth";
 
 export const authOptions = {
   providers: [
@@ -40,7 +39,6 @@ export const authOptions = {
         ...token,
         ...user,
       };
-
       return {
         id: merged.id,
         name: merged.name,

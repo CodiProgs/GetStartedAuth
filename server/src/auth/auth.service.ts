@@ -23,7 +23,7 @@ export class AuthService {
   async register(dto: RegisterDto) {
     return await this.userService.create(dto).catch(err => {
       if (err.code === 'P2002') {
-        throw new ConflictException('Email already exists')
+        throw new BadRequestException({ email: 'Email already exists' })
       }
       throw new BadRequestException({ UnexpectedError: 'Unexpected error' })
     })
