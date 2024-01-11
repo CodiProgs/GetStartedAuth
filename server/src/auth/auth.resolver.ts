@@ -1,19 +1,23 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { User } from 'src/user/models/user.model';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 import { Request, Response } from 'express';
 import { UserAgent } from 'common/common/decorators/user-agent.decorator';
-import { BadRequestException, HttpCode, HttpStatus, Res, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpStatus, UnauthorizedException } from '@nestjs/common';
 import { Cookie } from 'common/common/decorators/cookie.decorator';
 import { Public } from 'common/common/decorators/public.decorator';
 import { STATUS_CODES } from 'http';
+import { HttpService } from '@nestjs/axios';
+import { map, mergeMap } from 'rxjs';
+import { handleTimeoutError } from 'common/common/helpers/timeout-error.helper';
 
 @Public()
 @Resolver()
 export class AuthResolver {
   constructor(
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly httpService: HttpService
   ) { }
 
   @Mutation(() => String)
@@ -62,5 +66,17 @@ export class AuthResolver {
 
     await this.authService.setRefreshTokenToCookie(tokens, context.res)
     return { token: tokens.accessToken }
+  }
+
+  @Mutation(() => User)
+  googleAuth(
+    @Args('token') token: string,
+    @Context() context: { res: Response },
+    @UserAgent() userAgent: string
+  ) {
+    return this.httpService.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`).pipe(
+      mergeMap(({ data: { email, name, picture } }) => this.authService.googleAuth({ email, name, avatar: picture }, userAgent)),
+      map((data) => (this.authService.setRefreshTokenToCookie(data, context.res), { ...data.user, token: data.accessToken })),
+      handleTimeoutError())
   }
 }

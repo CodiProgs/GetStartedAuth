@@ -8,7 +8,7 @@ import SignOutButton from './SignOutButton';
 function Header() {
   const { data: session, status } = useSession()
   return (
-    <header className='flex justify-between items-center py-4'>
+    <header className='flex justify-between items-center py-4 h-[64px]'>
       <Link href="/">Home</Link>
       {status !== 'loading' ? (status === 'authenticated' ? (
         <div>

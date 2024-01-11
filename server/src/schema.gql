@@ -8,6 +8,7 @@ input LoginDto {
 }
 
 type Mutation {
+  googleAuth(token: String!): User!
   login(loginInput: LoginDto!): User!
   logout: String!
   refreshTokens: User!

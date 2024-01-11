@@ -9,7 +9,11 @@ import React from 'react';
 function SignOutButton() {
   const [logout] = useMutation<LogoutMutation>(LOGOUT);
   const handleSignOut = async () => {
-    await logout().catch(console.error).then(() => {
+    await logout().catch(() => {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("UnexpectedError"));
+      }
+    }).then(() => {
       signOut();
       if (typeof window !== "undefined") {
         window.localStorage.removeItem("token");

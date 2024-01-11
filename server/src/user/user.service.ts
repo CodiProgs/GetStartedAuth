@@ -21,6 +21,7 @@ export class UserService {
       data: {
         name: user.name,
         email: user.email,
+        avatar: user.avatar,
         roles: ['USER'],
         provider: provider,
         password: user.password ? await bcrypt.hash(user.password, 10) : null,
@@ -55,7 +56,6 @@ export class UserService {
     return user
   }
 
-  // todo!: add delete user, send id and check id from payload
   async delete(id: string, user: JwtPayload) {
     if (user.id !== id && !user.roles.includes(Role.ADMIN)) throw new BadRequestException({ UnexpectedError: 'You are not allowed to delete this user' })
     await this.cacheManager.store.mdel(`user:${id}`, `user:${user.email}`, `user:${user.nickname}`)

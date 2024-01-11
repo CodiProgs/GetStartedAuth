@@ -3,8 +3,12 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from '@/utils/Providers'
 import GlobalLayout from '@/components/GlobalLayout'
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 
 const inter = Inter({ subsets: ['latin'] })
+
+loadDevMessages();
+loadErrorMessages();
 
 export const metadata: Metadata = {
   title: 'Create Next App',

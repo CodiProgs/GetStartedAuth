@@ -44,15 +44,16 @@ function LogInForm() {
         email: response.data?.login.email,
         avatar: response.data?.login.avatar,
         name: response.data?.login.name,
+        roles: response.data?.login.roles,
         provider: response.data?.login.provider,
         nickname: response.data?.login.nickname,
         id: response.data?.login.id,
       });
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("token", response.data?.login.token!);
-      }
       if (!res?.error) {
-        router.push(callbackUrl ? callbackUrl : `/user/${response.data?.login.id}`);
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem("token", response.data?.login.token!);
+        }
+        router.push(callbackUrl ? callbackUrl : `/user/${response.data?.login.nickname}`);
       }
     }
   };

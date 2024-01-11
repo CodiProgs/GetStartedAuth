@@ -93,13 +93,13 @@ export class AuthService {
   }
 
   async deleteRefreshToken(refreshToken: string) {
-    return await this.prisma.token.delete({ where: { token: refreshToken } }).catch((_) => { throw new BadRequestException({ UnexpectedError: 'Unexpected error' }) })
+    return await this.prisma.token.delete({ where: { token: refreshToken } }).catch((_) => { return null })
   }
 
-  async googleAuth(email: string, userAgent: string) {
-    const userExists = await this.userService.findOne(email)
+  async googleAuth(dto: Partial<User>, userAgent: string) {
+    const userExists = await this.userService.findOne(dto.email)
     if (userExists) return await this.generateTokens(userExists, userAgent)
-    const newUser = await this.userService.create({ email: email, provider: 'GOOGLE' })
+    const newUser = await this.userService.create({ email: dto.email, name: dto.name, avatar: dto.avatar, nickname: dto.email.split('@')[0] }, 'GOOGLE')
     if (!newUser) throw new BadRequestException({ UnexpectedError: 'Unexpected error' })
     return await this.generateTokens(newUser, userAgent)
   }
