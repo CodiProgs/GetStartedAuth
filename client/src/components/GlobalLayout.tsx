@@ -6,7 +6,7 @@ import React from 'react';
 
 function GlobalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const array = ['/admin'] // '/register', '/login',
+  const array = ['/admin', '/login/google/success'] // '/register', '/login',
   return (
     <>
       {array.includes(pathname) ?

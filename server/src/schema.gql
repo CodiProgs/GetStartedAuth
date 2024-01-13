@@ -13,6 +13,7 @@ type Mutation {
   logout: String!
   refreshTokens: User!
   register(registerInput: RegisterDto!): String!
+  updateUser(updateUserInput: UpdateUserDto!): User!
 }
 
 enum Providers {
@@ -37,6 +38,11 @@ input RegisterDto {
 enum Roles {
   ADMIN
   USER
+}
+
+input UpdateUserDto {
+  name: String
+  nickname: String
 }
 
 type User {

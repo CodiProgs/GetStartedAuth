@@ -1,5 +1,5 @@
 import { Field, ObjectType, registerEnumType } from "@nestjs/graphql";
-import { $Enums, Provider, Role } from "@prisma/client";
+import { Provider, Role } from "@prisma/client";
 
 @ObjectType()
 export class User {

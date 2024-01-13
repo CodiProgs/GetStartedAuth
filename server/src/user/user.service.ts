@@ -7,6 +7,7 @@ import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { convertToSeconds } from 'common/common/utils/convert-to-seconds.utils';
 import { JwtPayload } from 'src/auth/interfaces';
+import { UpdateUserDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {
@@ -58,12 +59,36 @@ export class UserService {
 
   async delete(id: string, user: JwtPayload) {
     if (user.id !== id && !user.roles.includes(Role.ADMIN)) throw new BadRequestException({ UnexpectedError: 'You are not allowed to delete this user' })
-    await this.cacheManager.store.mdel(`user:${id}`, `user:${user.email}`, `user:${user.nickname}`)
+
     const deletedUser = await this.prisma.user.delete({
       where: {
         id
       }
     }).catch(() => { throw new BadRequestException({ UnexpectedError: 'User not found' }) })
+    await this.cacheManager.store.mdel(`user:${id}`, `user:${deletedUser.email}`, `user:${deletedUser.nickname}`)
     return deletedUser.id
+  }
+
+  async update(id: string, dto: UpdateUserDto) {
+    const user = await this.findOne(id)
+    if (dto.nickname) await this.cacheManager.store.del(`user:${user.nickname}`)
+
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        name: dto.name,
+        nickname: dto.nickname,
+      }
+    })
+
+    await this.cacheManager.store.mset([
+      [`user:${updatedUser.id}`, updatedUser],
+      [`user:${updatedUser.email}`, updatedUser],
+      [`user:${updatedUser.nickname}`, updatedUser]
+    ], convertToSeconds(this.config.get('JWT_EXP')))
+
+    return updatedUser
   }
 }

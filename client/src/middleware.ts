@@ -4,7 +4,6 @@ import { withAuth, NextRequestWithAuth } from 'next-auth/middleware';
 export default withAuth(function middleware(request: NextRequestWithAuth) {
   const session = request?.nextauth?.token;
 
-  if (request.nextUrl.pathname === '/') return NextResponse.next();
   if (!session && request.nextUrl.pathname !== '/login' && request.nextUrl.pathname !== '/register')
     return NextResponse.redirect(new URL('/login', request.url));
   if (session && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register'))
@@ -22,6 +21,6 @@ export default withAuth(function middleware(request: NextRequestWithAuth) {
 
 export const config = {
   matcher: [
-    '/login', '/register', '/admin'
+    '/login', '/register', '/admin', '/settings',
   ],
 };

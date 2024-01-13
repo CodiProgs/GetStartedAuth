@@ -72,10 +72,10 @@ export class AuthResolver {
   googleAuth(
     @Args('token') token: string,
     @Context() context: { res: Response },
-    @UserAgent() userAgent: string
+    @UserAgent() userAgent: string,
   ) {
     return this.httpService.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`).pipe(
-      mergeMap(({ data: { email, name, picture } }) => this.authService.googleAuth({ email, name, avatar: picture }, userAgent)),
+      mergeMap(({ data: { email, name, picture } }) => this.authService.providerAuth({ email, name, avatar: picture }, userAgent)),
       map((data) => (this.authService.setRefreshTokenToCookie(data, context.res), { ...data.user, token: data.accessToken })),
       handleTimeoutError())
   }

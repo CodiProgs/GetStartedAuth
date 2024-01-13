@@ -1,10 +1,8 @@
+
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { client } from "@/utils/apolloClient";
-import { GOOGLE_AUTH } from "@/graphql/mutation/GoogleAuth";
 import { NextAuthOptions } from "next-auth";
-import { headers } from 'next/headers'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -12,28 +10,11 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       async profile(profile, token) {
-        const user = await client.mutate({
-          mutation: GOOGLE_AUTH,
-          variables: {
-            token: token.access_token,
-          },
-          context: {
-            headers: {
-              'user-agent': headers().get('user-agent')
-            }
-          }
-        })
         return {
-          id: user.data.googleAuth.id,
-          name: user.data.googleAuth.name,
-          nickname: user.data.googleAuth.nickname,
-          email: user.data.googleAuth.email,
-          avatar: user.data.googleAuth.avatar,
-          provider: user.data.googleAuth.provider,
-          roles: user.data.googleAuth.roles,
+          id: profile.sub,
+          token: token.access_token
         }
-
-      }
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -61,10 +42,20 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   callbacks: {
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user, trigger, session }: any) {
+      if (trigger === "update") {
+        token.id = session.id ? session.id : token.id
+        token.name = session.name ? session.name : token.name
+        token.email = session.email ? session.email : token.email
+        token.nickname = session.nickname ? session.nickname : token.nickname
+        token.avatar = session.avatar ? session.avatar : token.avatar
+        token.provider = session.provider ? session.provider : token.provider
+        token.roles = session.roles ? session.roles : token.roles
+        token.token = session.token
+      }
       const merged = {
-        ...token,
         ...user,
+        ...token,
       };
       return {
         id: merged.id,
@@ -73,7 +64,8 @@ export const authOptions: NextAuthOptions = {
         nickname: merged.nickname,
         avatar: merged.avatar,
         provider: merged.provider,
-        roles: merged.roles
+        roles: merged.roles,
+        token: merged.token
       };
     },
     session: ({ session, token }: { session: any, token: any }) => {
@@ -87,6 +79,7 @@ export const authOptions: NextAuthOptions = {
           nickname: token.nickname,
           avatar: token.avatar,
           provider: token.provider,
+          token: token.token
         },
       }
     },

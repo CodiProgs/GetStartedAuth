@@ -1,9 +1,10 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from './models/user.model';
 import { Public } from 'common/common/decorators/public.decorator';
 import { CurrentUser } from 'common/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/auth/interfaces';
+import { UpdateUserDto } from './dto/user.dto';
 
 @Resolver()
 export class UserResolver {
@@ -25,5 +26,13 @@ export class UserResolver {
     @CurrentUser() user: JwtPayload
   ) {
     return await this.userService.delete(id, user)
+  }
+
+  @Mutation(() => User)
+  async updateUser(
+    @CurrentUser('id') id: string,
+    @Args('updateUserInput') dto: UpdateUserDto
+  ) {
+    return await this.userService.update(id, dto)
   }
 }

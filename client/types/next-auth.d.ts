@@ -2,13 +2,14 @@ import NextAuth from "next-auth"
 
 declare module "next-auth" {
   interface User {
-    id?: string
-    name?: string
-    nickname?: string
-    email?: string
-    avatar?: string
-    provider?: string
-    roles?: string[]
+    id?: string | null
+    name?: string | null
+    nickname?: string | null
+    email?: string | null
+    avatar?: string | null
+    provider?: string | null
+    roles?: string[] | null
+    token?: string | null
   }
 
   interface Session extends NextAuth.Session {
@@ -18,13 +19,14 @@ declare module "next-auth" {
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id?: string
-    name?: string
-    nickname?: string
-    email?: string
-    avatar?: string
-    provider?: string
-    roles?: string[]
+    id?: string | null
+    name?: string | null
+    nickname?: string | null
+    email?: string | null
+    avatar?: string | null
+    provider?: string | null
+    roles?: string[] | null
+    token?: string | null
   }
 }
 

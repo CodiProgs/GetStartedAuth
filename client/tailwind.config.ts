@@ -9,9 +9,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        themeColorBg: "rgb(var(--bg-color))",
-        themeColorBgSoft: "rgb(var(--bg-colorSoft))",
-        themeColorText: "rgb(var(--text-color))",
+        themeColorBg: "var(--bg-color)",
+        themeColorBgSoft: "var(--bg-colorSoft)",
+        themeColorText: "var(--text-color)",
+        themeColorTextSoft: "var(--text-colorSoft)",
       }
     },
   },
