@@ -8,13 +8,15 @@ import { ConfigService } from '@nestjs/config';
 import { convertToSeconds } from 'common/common/utils/convert-to-seconds.utils';
 import { JwtPayload } from 'src/auth/interfaces';
 import { UpdateUserDto } from './dto/user.dto';
+import { FileService } from 'src/file/file.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private config: ConfigService
+    private readonly config: ConfigService,
+    private readonly fileService: FileService
   ) { }
 
   async create(user: Partial<User>, provider: Provider = 'LOCAL') {
@@ -47,11 +49,7 @@ export class UserService {
         }
       })
       if (!user) return null
-      await this.cacheManager.store.mset([
-        [`user:${user.id}`, user],
-        [`user:${user.email}`, user],
-        [`user:${user.nickname}`, user]
-      ], convertToSeconds(this.config.get('JWT_EXP')))
+      await this.updateUserInCache(user)
       return user
     }
     return user
@@ -65,6 +63,7 @@ export class UserService {
         id
       }
     }).catch(() => { throw new BadRequestException({ UnexpectedError: 'User not found' }) })
+    await this.fileService.deleteImage(deletedUser.avatar)
     await this.cacheManager.store.mdel(`user:${id}`, `user:${deletedUser.email}`, `user:${deletedUser.nickname}`)
     return deletedUser.id
   }
@@ -82,13 +81,28 @@ export class UserService {
         nickname: dto.nickname,
       }
     })
-
-    await this.cacheManager.store.mset([
-      [`user:${updatedUser.id}`, updatedUser],
-      [`user:${updatedUser.email}`, updatedUser],
-      [`user:${updatedUser.nickname}`, updatedUser]
-    ], convertToSeconds(this.config.get('JWT_EXP')))
-
+    await this.updateUserInCache(updatedUser)
     return updatedUser
+  }
+
+  async updateImage(id: string, imagePath: string) {
+    const user = await this.findOne(id)
+    await this.fileService.deleteImage(user.avatar)
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        avatar: imagePath
+      }
+    })
+    await this.updateUserInCache(updatedUser)
+    return updatedUser
+  }
+
+  async updateUserInCache(user: User) {
+    await this.cacheManager.store.mset([
+      [`user:${user.id}`, user],
+      [`user:${user.email}`, user],
+      [`user:${user.nickname}`, user]
+    ], convertToSeconds(this.config.get('JWT_EXP')))
   }
 }

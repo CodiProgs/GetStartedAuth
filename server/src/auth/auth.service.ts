@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -38,7 +38,7 @@ export class AuthService {
   }
 
   private async generateTokens(user: User, userAgent: string) {
-    const accessToken = 'Bearer ' + await this.jwtService.signAsync({ id: user.id, email: user.email, roles: user.roles })
+    const accessToken = await this.jwtService.signAsync({ id: user.id, email: user.email, roles: user.roles })
     const refreshToken = await this.getRefreshToken(user.id, userAgent)
 
     return { accessToken, refreshToken, user }

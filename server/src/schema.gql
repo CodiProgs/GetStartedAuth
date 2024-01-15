@@ -8,11 +8,13 @@ input LoginDto {
 }
 
 type Mutation {
+  deleteUser(id: String!): String!
   googleAuth(token: String!): User!
   login(loginInput: LoginDto!): User!
   logout: String!
   refreshTokens: User!
   register(registerInput: RegisterDto!): String!
+  updateImage(image: Upload!): String!
   updateUser(updateUserInput: UpdateUserDto!): User!
 }
 
@@ -23,7 +25,6 @@ enum Providers {
 }
 
 type Query {
-  deleteUser(id: String!): String!
   getUserProfile(nickname: String!): User!
 }
 
@@ -44,6 +45,9 @@ input UpdateUserDto {
   name: String
   nickname: String
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type User {
   avatar: String

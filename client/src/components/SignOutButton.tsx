@@ -2,6 +2,7 @@
 
 import { LogoutMutation } from '@/gql/graphql';
 import { LOGOUT } from '@/graphql/mutation/Logout';
+import { useGlobalStore } from '@/storage/globalStorage';
 import { useMutation } from '@apollo/client';
 import { signOut } from 'next-auth/react';
 import React from 'react';
@@ -15,9 +16,7 @@ function SignOutButton() {
       }
     }).then(() => {
       signOut();
-      if (typeof window !== "undefined") {
-        window.localStorage.removeItem("token");
-      }
+      useGlobalStore.setState({ token: undefined });
     })
 
   }

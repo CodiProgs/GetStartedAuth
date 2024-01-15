@@ -5,11 +5,13 @@ import {
     gql,
     Observable,
     ApolloLink,
+    from,
 } from "@apollo/client"
 
 import { createUploadLink } from "apollo-upload-client"
 import { onError } from "@apollo/client/link/error"
 import { URL_SERVER } from "./variables"
+import { useGlobalStore } from "@/storage/globalStorage"
 
 async function RefreshTokens(client: ApolloClient<NormalizedCacheObject>) {
     const { data } = await client.mutate({
@@ -28,6 +30,7 @@ async function RefreshTokens(client: ApolloClient<NormalizedCacheObject>) {
 let retryCount = 0
 const maxRetry = 3
 
+
 const errorLink = onError(({ graphQLErrors, operation, forward }) => {
     if (graphQLErrors) {
         for (const err of graphQLErrors) {
@@ -38,13 +41,11 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
                     RefreshTokens(client)
                         .then((token) => {
                             console.log("token", token)
-                            if (typeof window !== "undefined") {
-                                window.localStorage.setItem("token", token)
-                            }
+                            useGlobalStore.setState({ token });
                             operation.setContext((previousContext: any) => ({
                                 headers: {
                                     ...previousContext.headers,
-                                    authorization: token,
+                                    authorization: `Bearer ${token}`,
                                 },
                             }))
                             const forward$ = forward(operation)
@@ -72,9 +73,18 @@ const uploadLink = createUploadLink({
     credentials: "include",
     headers: {
         "apollo-require-preflight": "true",
-        "authorization": `${typeof window !== "undefined" ? `${window.localStorage.getItem("token")}` : ""}`,
     },
 })
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+    const token = useGlobalStore.getState().token;
+    operation.setContext({
+        headers: {
+            Authorization: token ? `Bearer ${token}` : '',
+        },
+    });
+    return forward(operation);
+});
 
 export const client = new ApolloClient({
     uri: `${URL_SERVER}/graphql`,
@@ -83,5 +93,5 @@ export const client = new ApolloClient({
     headers: {
         "Content-Type": "application/json",
     },
-    link: ApolloLink.from([errorLink, uploadLink]),
+    link: from([authMiddleware, errorLink, uploadLink]),
 })

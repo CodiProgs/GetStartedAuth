@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as CookieParser from 'cookie-parser';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
-import { graphqlUploadExpress } from 'graphql-upload-ts';
+import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { GraphQLErrorFilter } from './filter/exception.filter';
 
 async function bootstrap() {

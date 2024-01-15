@@ -9,6 +9,7 @@ import { LoginMutation } from '@/gql/graphql';
 import { LOGIN } from '@/graphql/mutation/Login';
 import { GraphQLErrorExtensions } from 'graphql';
 import { signIn } from 'next-auth/react';
+import { useGlobalStore } from '@/storage/globalStorage';
 
 function LogInForm() {
   const router = useRouter();
@@ -50,10 +51,9 @@ function LogInForm() {
         id: response.data?.login.id,
       });
       if (!res?.error) {
-        if (typeof window !== "undefined") {
-          window.localStorage.setItem("token", response.data?.login.token!);
-        }
+        useGlobalStore.setState({ token: response.data?.login.token! });
         router.push(callbackUrl ? callbackUrl : `/user/${response.data?.login.nickname}`);
+        router.refresh();
       }
     }
   };

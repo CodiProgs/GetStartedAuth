@@ -2,6 +2,7 @@
 
 import { GoogleAuthMutation } from '@/gql/graphql';
 import { GOOGLE_AUTH } from '@/graphql/mutation/GoogleAuth';
+import { useGlobalStore } from '@/storage/globalStorage';
 import { useMutation } from '@apollo/client';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -23,9 +24,7 @@ function GoogleAuth() {
         ...res.data.googleAuth,
         token: undefined
       })
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("token", res.data?.googleAuth.token!);
-      }
+      useGlobalStore.setState({ token: res.data.googleAuth.token! })
       push('/user/' + res.data.googleAuth.nickname)
     }
   }
