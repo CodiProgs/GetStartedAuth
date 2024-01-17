@@ -53,7 +53,6 @@ function LogInForm() {
       if (!res?.error) {
         useGlobalStore.setState({ token: response.data?.login.token! });
         router.push(callbackUrl ? callbackUrl : `/user/${response.data?.login.nickname}`);
-        router.refresh();
       }
     }
   };
