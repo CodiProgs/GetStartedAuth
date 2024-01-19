@@ -27,7 +27,7 @@ function UpdateUser() {
         nickname: updateData.nickname ? updateData.nickname : undefined
       }
     }).catch(error => {
-      if (error && error.graphQLErrors[0].extensions) {
+      if (error && error.graphQLErrors[0] && error.graphQLErrors[0].extensions) {
         setErrors(error.graphQLErrors[0].extensions)
       }
     })

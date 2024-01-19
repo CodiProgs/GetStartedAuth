@@ -24,7 +24,7 @@ function GetUserProfile() {
             </div>
             {sessionData?.user?.id === data?.getUserProfile?.id && (
               <Link href={'/settings'} className='group p-2'>
-                <IoMdSettings size={24} className='text-themeColorTextSoft group-hover:text-themeColorText' />
+                <IoMdSettings size={24} className='text-text_soft group-hover:text-text_soft' />
               </Link>
             )}
           </div>

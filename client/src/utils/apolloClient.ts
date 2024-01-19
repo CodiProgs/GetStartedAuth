@@ -31,12 +31,17 @@ let retryCount = 0
 const maxRetry = 3
 
 
-const errorLink = onError(({ graphQLErrors, operation, forward }) => {
+const errorLink = onError(({ networkError, graphQLErrors, operation, forward }) => {
+    if (networkError) {
+        return new Observable((observer) => {
+            window.dispatchEvent(new Event("UnexpectedError"));
+            observer.error(networkError)
+        })
+    }
     if (graphQLErrors) {
         for (const err of graphQLErrors) {
             if (err.extensions.code === "UNAUTHENTICATED" && retryCount < maxRetry) {
                 retryCount++
-
                 return new Observable((observer) => {
                     RefreshTokens(client)
                         .then((token) => {

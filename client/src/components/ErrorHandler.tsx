@@ -45,7 +45,7 @@ function ErrorHandler({ children }: { children: React.ReactNode }) {
     <>
       {children}
       {show && (
-        <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} className='fixed bg-themeColorBgSoft text-center top-[30px] left-0 right-0 mx-auto max-w-[300px] w-full px-[30px] py-[20px] h-max min-h-[100px] border border-blueColor z-50 flex items-center flex-col gap-4 rounded-lg'>
+        <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} className='fixed bg-bg_soft text-center top-[30px] left-0 right-0 mx-auto max-w-[300px] w-full px-[30px] py-[20px] h-max min-h-[100px] border border-blueColor z-50 flex items-center flex-col gap-4 rounded-lg'>
           <button className='group absolute right-5 top-5 p-1' onClick={() => setShow(!show)}>
             <IoCloseOutline size={20} className="stroke-[#999999] group-hover:stroke-blueColor" />
           </button>

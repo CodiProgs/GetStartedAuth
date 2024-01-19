@@ -34,7 +34,7 @@ function LogInForm() {
         email: loginData.email,
       }
     }).catch(error => {
-      if (error && error.graphQLErrors[0].extensions) {
+      if (error && error.graphQLErrors[0] && error.graphQLErrors[0].extensions) {
         setErrors(error.graphQLErrors[0].extensions)
       }
     })
